@@ -1,0 +1,1463 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "title": "Cloud API",
+      "description": "To get access to these APIs for your organization, <a href='https://account.cloud.tibco.com/contactsupport/TSC' target='_blank'>contact the TIBCO Support team.</a> The APIs are region specific. That is, for a subscription in Oregon (us-west-2), the API domain is <a href='https://api.cloud.tibco.com' target='_blank'>api.cloud.tibco.com</a>, for N. Virginia (us-east-1) it is <a href='https://us-east.api.cloud.tibco.com' target='_blank'>us-east.api.cloud.tibco.com</a>, for Ireland (eu-west-1) it is <a href='https://eu.api.cloud.tibco.com' target='_blank'>eu.api.cloud.tibco.com</a>, for Sydney (ap-southeast-2) it is <a href='https://au.api.cloud.tibco.com' target='_blank'>au.api.cloud.tibco.com</a>, and for Washington, the API domain is <a href='https://api.us.azure.cloud.tibco.com' target='_blank'>api.us.azure.cloud.tibco.com</a>.",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "https://api.cloud.tibco.com/cic"
+      }
+    ],
+    "security": [
+      {
+        "OAuth2Bearer": []
+      }
+    ],
+    "tags": [
+      {
+        "name": "Organization Management",
+        "description": "Organization Management API to manage the organization"
+      },
+      {
+        "name": "User Management",
+        "description": "User Management API to manage users"
+      },
+      {
+        "name": "Proxy Agent Configuration",
+        "description": "API to generate access keys for <a href='https://account.cloud.tibco.com/cloud/docs/proxy-agent/'>Proxy Agent</a>"
+      }
+    ],
+    "paths": {
+      "/v1/myaccount/accounts": {
+        "post": {
+          "tags": [
+            "Organization Management"
+          ],
+          "summary": "Add a new child organization to TIBCO Cloud organization in a specified region.",
+          "description": "Add a new child organization to a TIBCO Cloud organization. Only an owner of the organization can create child organizations. When a child organization is created, all the existing active purchase order subscriptions of TIBCO Cloud<sup>&trade;</sup> Integration, or TIBCO Cloud<sup>&trade;</sup> AuditSafe in the current region, and users (owners and members) existing in the organization are copied to the child organization. <br><b>Note: Use the authorization token of the owner of the parent organization.</b>",
+          "requestBody": {
+            "description": "Child organization details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostChildOrganizationRequest"
+                },
+                "example": {
+                  "displayName": "Child display name",
+                  "description": "Child description",
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ],
+                  "shareWithParent": false,
+                  "skipInheritPublishedAPIAccess": false
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "201": {
+              "description": "Added child organization successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PostChildOrganizationResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          },
+          "x-codegen-request-body-name": "body"
+        },
+        "get": {
+          "tags": [
+            "Organization Management"
+          ],
+          "summary": "Get the list of the child organizations of the current organization.",
+          "description": "Get the list of the child organizations of the current organization. This API supports optional pagination and sorting of the response as well. This API can be invoked by the owner/members of the organization.<br><b>Note: Use the authorization token of the parent organization.</b>",
+          "parameters": [
+            {
+              "name": "page",
+              "in": "query",
+              "description": "This denotes the page number of the response. 'page' parameter must be always be passed with 'limit' parameter.",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "default": "1"
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "description": "This denotes number of records fetched per call. 'limit' must be passed with 'page'. If both of them is not passed then this API will give all matching records",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "default": "100"
+              }
+            },
+            {
+              "name": "order",
+              "in": "query",
+              "description": "This parameter denotes the order of the display name of the organizations. The value could be ASC for ascending order and DESC for descending.",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "ASC",
+                  "DESC"
+                ]
+              }
+            },
+            {
+              "name": "tags",
+              "in": "query",
+              "description": "Organizations matching all the tags in query params will be returned in response. Multiple comma separated values can be passed.",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "The child organizations fetched successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/GetChildAccountsResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/myaccount/accounts/{account-id}": {
+        "delete": {
+          "tags": [
+            "Organization Management"
+          ],
+          "summary": "Delete child organization and all of the domains it is associated with.",
+          "description": "Delete a child organization. Only an owner of the parent organization can delete child organization. When a child organization is deleted, the existing subscriptions in the current region will be deleted, and users (owners and members) existing in the organization will be removed from the child organization. <br><b>Note: This API has a streaming response.</b> <br><b>Note: Use the authorization token of the parent organization.</b>",
+          "parameters": [
+            {
+              "name": "account-id",
+              "in": "path",
+              "description": "TSC account id of the child account to be deleted.",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "force-delete",
+              "in": "query",
+              "description": "When set to true the subscription deletion will be attempted by ignoring any error that might occur in the process. Default is false.",
+              "required": false,
+              "schema": {
+                "type": "boolean"
+              },
+              "enum": [
+                true,
+                false
+              ],
+              "default": false
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Deleted child account successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Success"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/myaccount/tags": {
+        "put": {
+          "tags": [
+            "Organization Management"
+          ],
+          "summary": "Update tags for a given organization.",
+          "description": "Update tags for a given organization. Only an owner of the organization can update tags of the organization.<br>Note: Use the authorization token of the organization.</b>",
+          "requestBody": {
+            "description": "List of tags for the given organization.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PutTagsPayload"
+                },
+                "example": {
+                  "tags": [
+                    "tag1",
+                    "tag2"
+                  ]
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Successfully updated",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Success"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request error; required query parameters not present",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden; required header not present",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not Found; accountId not present",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/myaccount/tags/{tag}": {
+        "delete": {
+          "tags": [
+            "Organization Management"
+          ],
+          "summary": "Delete given tag of the organization.",
+          "description": "Delete given tag for the organization. Only an owner of the organization can delete tags of the organizations.<br><b>Note: Use the authorization token of the organization.</b>",
+          "parameters": [
+            {
+              "name": "tag",
+              "in": "path",
+              "description": "The tag to be deleted",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successfully deleted the tag",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Success"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request error; if organization id/tag is not present",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not Found; if accountId or tag not present",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/members": {
+        "put": {
+          "tags": [
+            "User Management"
+          ],
+          "summary": "This API can be used to invite new users on domain teams or update detail of existing domain users. This API returns streaming response with status.",
+          "description": "Only team admin or owner can perform actions on the domain team. At max, you can provision 50 users in a single request. Upon detecting invalid payload entries in the request, the API will skip their provisioning and collect such erroneous Email Ids and their corresponding error messages in an error response and will continue provisioning the remaining valid entries. Concurrent requests for the same domain will be rejected. If SSO is not enabled for any email domain, TA accounts will be created. Users having the same email domain as org owner's domain and if SSO is enabled, such users will be auto-provisioned onto domain team; users having different email domain than org owner's, such users will be sent invitation emails and they will NOT be auto-provisioned.<br><b><a href='https://community.tibco.com/wiki/bulk-user-management-tibco-cloud'>Bulk user management documentation</a></b>",
+          "requestBody": {
+            "description": "Members to be provisioned on domain",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishedAPIUpdateMembersRequest"
+                },
+                "example": {
+                  "tenantId": "MASHERY",
+                  "tenantUsersRolesInviteDetails": [
+                    {
+                      "firstName": "Jane",
+                      "lastName": "Doe",
+                      "company": "Jane Doe Inc.",
+                      "state": "CA",
+                      "country": "US",
+                      "phone": "+1345678654",
+                      "extendedUserAttributes": {
+                        "reportsTo": "CEO",
+                        "description": "Executive VP",
+                        "department": "Sales",
+                        "jobTitle": "EVP",
+                        "communicationEmail": "jane@doe.com"
+                      },
+                      "email": "jane1@doe.com",
+                      "tenantRoleIds": [
+                        "APIMGR",
+                        "SUPMGR"
+                      ],
+                      "teamAdmin": false
+                    }
+                  ]
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Success or error streaming response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PublishedAPIUpdateMembersResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "get": {
+          "tags": [
+            "User Management"
+          ],
+          "summary": "This API can be used to retrieve details of the users associated with logged in account depending on the filters provided",
+          "description": "Only team admin or owner can retrieve user details from domain teams. This API supports pagination along with other important filters to retrieve the user details. <br><b><a href='https://community.tibco.com/wiki/bulk-user-management-tibco-cloud'>Bulk user management documentation</a></b>",
+          "parameters": [
+            {
+              "name": "tenant-id",
+              "in": "query",
+              "description": "Get all users associated with tenant",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "region",
+              "in": "query",
+              "description": "region from which users need to be retrieved",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "role",
+              "in": "query",
+              "description": "Get users with a specific role on a domain; e.g. for LA users can play Administrator or ApplicationDeveloper role",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "person",
+              "in": "query",
+              "description": "Query-param person can be used to filter user by FirstName, LastName or Email",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "order-by",
+              "in": "query",
+              "description": "get users in ascending or descending order based on either firstname, lastname, email, last_seen, country and state; default is ascending order of latest login time.",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "firstname,asc",
+                  "firstname,desc",
+                  "lastname,asc",
+                  "lastname,desc",
+                  "email,asc",
+                  "email,desc",
+                  "country,asc",
+                  "country,desc",
+                  "state,asc",
+                  "state,desc",
+                  "last_seen,asc",
+                  "last_seen,desc"
+                ]
+              }
+            },
+            {
+              "name": "team-admin",
+              "in": "query",
+              "description": "Get team admin users associated with a tenant if team-admin is true, otherwise users who are not team admins",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "true",
+                  "false"
+                ]
+              }
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "description": "This is to fetch the subset of the matching result set. Page parameter is used to calculate offset at backend i.e if page value is 3 and the limit is 25, offset value will be 50 and limit value will be 25. Default value is 1 if not provided. NOTE: To support pagination both 'page' and 'limit' params are required",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 1
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "description": "This is to fetch number of results per page. Max value is 100 and if not specified default value will also be 100. NOTE: To support pagination both 'page' and 'limit' params are required",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 100
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User details",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UsersDetails"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request when the query parameter combination is incorrect",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden when no user is associated with account/subscription OR requesting user is not a team admin or owner OR logged in account don't have published API access",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Account not found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "delete": {
+          "tags": [
+            "User Management"
+          ],
+          "summary": "This API can be used to remove existing member/owner/invited users from organization or domain in a region using email address. This API returns streaming response.",
+          "description": "Only team admin or owner can perform actions on domain team; only owner can perform actions on organization. While removing users from Organization, tenantId should not be provided. You can remove maximum 50 users in a single request. Concurrent requests for the same domain will be rejected and only one request will go through.<br><b><a href='https://community.tibco.com/wiki/bulk-user-management-tibco-cloud'>Bulk user management documentation</a></b>",
+          "requestBody": {
+            "description": "Request payload with tenantId, region and emails of the users to be removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishedAPIRemoveUserRequest"
+                },
+                "example": {
+                  "tenantId": "string",
+                  "emails": [
+                    "remove@example.com",
+                    "delete@example.com"
+                  ]
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Success or error streaming response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PublishedAPIRemoveUserResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/secrets": {
+        "post": {
+          "tags": [
+            "Proxy Agent Configuration"
+          ],
+          "summary": "This API is used to generate access keys for https://account.cloud.tibco.com/cloud/docs/proxy-agent/.",
+          "description": "Generate an access key secret for the provided access key ID",
+          "requestBody": {
+            "description": "AccessKeyID details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateSecretRequest"
+                },
+                "example": {
+                  "accessKeyId": "testKeyId",
+                  "tenantId": "tenantId"
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Access Key Secret generated successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/GenerateSecretResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "Forbidden",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Conflict",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Unexpected error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/v1/users": {
+        "put": {
+          "tags": [
+            "User Management"
+          ],
+          "summary": "This API is used to update user details. This API returns a streaming response with status.",
+          "description": "This API can only be used by organization owners. The caller can update user details of members and co-owners of the organization they own. A maximum of 50 user details can be updated at a time. Only those user details which are provided in the payload will be updated, rest of the data will be kept intact. The email provided in the payload is required for fetching existing user details and will not be updated.",
+          "requestBody": {
+            "description": "Users details to be updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishedAPIUpdateUsersRequest"
+                },
+                "example": {
+                  "usersDetails": [
+                    {
+                      "email": "jane1@doe.com",
+                      "firstName": "Jane",
+                      "lastName": "Doe",
+                      "company": "Jane Doe Inc.",
+                      "country": "US",
+                      "phone": "+1345678654",
+                      "state": "CA",
+                      "extendedUserAttributes": {
+                        "reportsTo": "CEO",
+                        "department": "Sales",
+                        "jobTitle": "EVP",
+                        "description": "Executive VP",
+                        "communicationEmail": "jane@doe.com"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "required": true
+          },
+          "responses": {
+            "200": {
+              "description": "Success or error streaming response",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PublishedAPIUpdateUsersResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "PublishedAPIRemoveUserRequest": {
+          "required": [
+            "emails"
+          ],
+          "properties": {
+            "tenantId": {
+              "type": "string",
+              "description": "TenantId of team if users need to be removed from tenant team. e.g. BPM, TCI, NIMBUS etc.. No need to provided tenantId while removing users from Organization"
+            },
+            "emails": {
+              "type": "array",
+              "description": "Email addresses of the users need to be removed from tenant team or organization. You can remove maximum of 50 users in a single request",
+              "items": {
+                "type": "string",
+                "description": "email address",
+                "minLength": 3,
+                "maxLength": 255
+              }
+            }
+          }
+        },
+        "PublishedAPIRemoveUserResponse": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "required": [
+                  "code",
+                  "status",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "status code, ATMOSPHERE-11060 success code; ATMOSPHERE-11063 conflict error code when concurrent requests are in progress; ATMOSPHERE-11002 internal server error code when processing of the request fails, ATMOSPHERE-11001 bad request error code when request inputs are invalid, ATMOSPHERE-11006 when user performing operation is forbidden to perform the action"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Status of the API invocation. 'success' when the request is successful, 'deleting' when the request is being processed and 'error' when request fails"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "status message"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "TenantUserRoleInviteDetailForPublishedAPI": {
+          "required": [
+            "email",
+            "firstName",
+            "lastName"
+          ],
+          "properties": {
+            "email": {
+              "type": "string",
+              "description": "Email address of the user being invited",
+              "minLength": 3,
+              "maxLength": 255
+            },
+            "firstName": {
+              "type": "string",
+              "description": "Given name of the user. All characters are allowed except for these \"$¢∞≠<>",
+              "minLength": 2,
+              "maxLength": 255
+            },
+            "lastName": {
+              "type": "string",
+              "description": "Family name of the user. All characters are allowed except for these \"$¢∞≠<>",
+              "minLength": 2,
+              "maxLength": 255
+            },
+            "company": {
+              "type": "string",
+              "description": "Company name of the user",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "phone": {
+              "type": "string",
+              "description": "Phone number of the user. Only digits, space and ()+-. are allowed",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "state": {
+              "type": "string",
+              "description": "Geographical state of the user; mandatory when the country is 'United States' (US, USA) or 'Canada' (CA, CAN). Only a-z, A-Z, and space is allowed",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "country": {
+              "type": "string",
+              "description": "Country of the user. Only valid country names are allowed",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "extendedUserAttributes": {
+              "$ref": "#/components/schemas/ExtendedUserAttributes"
+            },
+            "tenantRoleIds": {
+              "type": "array",
+              "description": "List of Tenant RoleIds the user is being assigned to.",
+              "items": {
+                "type": "string"
+              }
+            },
+            "teamAdmin": {
+              "type": "boolean",
+              "description": "Determines if the user is being updated as Team Admin or not. The value should be true if the user is being assigned as a Team Admin otherwise should be false."
+            }
+          }
+        },
+        "PublishedAPIUpdateMembersRequest": {
+          "required": [
+            "tenantId",
+            "tenantUsersRolesInviteDetails"
+          ],
+          "properties": {
+            "tenantId": {
+              "type": "string",
+              "description": "Tenant Id to which user to be invited/retracted from"
+            },
+            "tenantUsersRolesInviteDetails": {
+              "type": "array",
+              "description": "This is a required attribute when the user(s) are invited onto a domain team. You can specify maximum 50 users details in a single request",
+              "items": {
+                "$ref": "#/components/schemas/TenantUserRoleInviteDetailForPublishedAPI"
+              }
+            }
+          }
+        },
+        "PublishedAPIUpdateMembersResponse": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "required": [
+                  "code",
+                  "status",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "status code; ATMOSPHERE-11064 -> success code i.e. all users were auto-provisioned on domain teams successfully, ATMOSPHERE-11065 -> success code i.e. all users were invited on domain teams successfully and invitation emails were sent, ATMOSPHERE-11066 -> success code i.e. some users were invited on domain teams and invitation emails were sent for such users, remaining users were auto-provisioned onto domain teams, ATMOSPHERE-11063 -> error code i.e. conflict error code when concurrent requests are in progress, ATMOSPHERE-11002 -> error code i.e. internal server error code when processing of the request fails, ATMOSPHERE-11001 -> error code i.e. bad request error code when request inputs are invalid, ATMOSPHERE-11006 -> error code i.e. when user performing operation is forbidden to perform the action"
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Status of the API invocation. 'success' when the request is successful, 'deleting' when the request is being processed and 'error' when request fails"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "status message"
+                  },
+                  "invalidPayloadEntries": {
+                    "type": "array",
+                    "description": "List of all invalid payload entries (if any) with email and their corresponding error message(s)",
+                    "items": {
+                      "$ref": "#/components/schemas/PublishedAPIInvalidEmailAndErrorMessages"
+                    }
+                  },
+                  "preconditionFailed": {
+                    "type": "string",
+                    "description": "A precondition (eg: insufficient seats, etc) has failed. None of the entries will be provisioned if a precondition failure is detected."
+                  },
+                  "failedInvites": {
+                    "properties": {
+                      "email": {
+                        "type": "array",
+                        "description": "Email IDs for which provisioning failed. Caller should reach out to TIBCO support in this case.",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "errorMessage": {
+                        "type": "string",
+                        "description": "Provisioning failure error message"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "UsersDetails": {
+          "required": [
+            "numberOfRecords",
+            "users"
+          ],
+          "properties": {
+            "numberOfRecords": {
+              "type": "integer",
+              "description": "total number of records for the requested resources depending on the filters provided"
+            },
+            "users": {
+              "type": "array",
+              "description": "List of account/tenant users",
+              "items": {
+                "$ref": "#/components/schemas/UserDetails"
+              }
+            }
+          }
+        },
+        "UserDetails": {
+          "required": [
+            "userEntityId",
+            "email"
+          ],
+          "properties": {
+            "userEntityId": {
+              "type": "string",
+              "description": "TSC User id"
+            },
+            "inviteId": {
+              "type": "string",
+              "description": "TSC Invite id for organization or tenant; depends on whether you provided the tenant-id query parameter. If you do not provide any tenant-id query parameter, then the value will be the latest InviteId for TSC Account on the Organization otherwise for Tenant in that TSC Account"
+            },
+            "role": {
+              "type": "string",
+              "description": "Role of the user in account"
+            },
+            "email": {
+              "type": "string",
+              "description": "Email of the user",
+              "minLength": 3,
+              "maxLength": 255
+            },
+            "firstName": {
+              "type": "string",
+              "description": "First name of the user",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "lastName": {
+              "type": "string",
+              "description": "Last name of the user",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "country": {
+              "type": "string",
+              "description": "Country the user lives in",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "state": {
+              "type": "string",
+              "description": "State the user lives in",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "phone": {
+              "type": "string",
+              "description": "Phone number of the user",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "company": {
+              "type": "string",
+              "description": "Company the user works for",
+              "minLength": 1,
+              "maxLength": 255
+            },
+            "extendedUserAttributes": {
+              "$ref": "#/components/schemas/ExtendedUserAttributes"
+            },
+            "status": {
+              "type": "string",
+              "description": "Status of user in account. Active/inactive, etc",
+              "enum": [
+                "active",
+                "disabled"
+              ]
+            },
+            "inviteCount": {
+              "type": "integer",
+              "description": "Number of the times the user has been invited on account"
+            },
+            "tenantDetails": {
+              "type": "array",
+              "description": "List of tenants details",
+              "items": {
+                "$ref": "#/components/schemas/TenantDetails"
+              }
+            },
+            "lastLoginDate": {
+              "type": "integer",
+              "description": "Last login timestamp of the user"
+            },
+            "timestamp": {
+              "type": "integer",
+              "description": "Timestamp when the user was added to account or tenant (if query param tenant-id is specified, it will be timestamp when the user was added on tenant). If status is 'invited', it will be timestamp of most recent invitation."
+            }
+          }
+        },
+        "TenantDetails": {
+          "required": [
+            "tenantId"
+          ],
+          "properties": {
+            "tenantId": {
+              "type": "string",
+              "description": "Tenant Id"
+            },
+            "region": {
+              "type": "string",
+              "description": "Region of the subscription user is associated with"
+            },
+            "tenantRoleIds": {
+              "type": "array",
+              "description": "List of the Tenant Role Ids associated with the user in a TSC Account",
+              "items": {
+                "type": "string"
+              }
+            },
+            "teamAdmin": {
+              "type": "boolean",
+              "description": "Team Admin status of the user associated with the tenant in the TSC Account"
+            },
+            "lastLoginDate": {
+              "type": "integer",
+              "description": "Last login timestamp of the user on the domain"
+            }
+          }
+        },
+        "PublishedAPIUpdateUsersRequest": {
+          "required": [
+            "usersDetails"
+          ],
+          "properties": {
+            "usersDetails": {
+              "type": "array",
+              "description": "This is a required attribute for updating user details. A maximum of 50 user details can be provided at a time.",
+              "items": {
+                "$ref": "#/components/schemas/PublishedAPIUpdateUsersDetails"
+              }
+            }
+          }
+        },
+        "PublishedAPIUpdateUsersDetails": {
+          "required": [
+            "email"
+          ],
+          "properties": {
+            "email": {
+              "type": "string",
+              "description": "Email of the user",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "firstName": {
+              "type": "string",
+              "description": "First name of the user. All characters are allowed except for these \"$¢∞≠<>",
+              "minLength": 2,
+              "maxLength": 255
+            },
+            "lastName": {
+              "type": "string",
+              "description": "Last name of the user. All characters are allowed except for these \"$¢∞≠<>",
+              "minLength": 2,
+              "maxLength": 255
+            },
+            "company": {
+              "type": "string",
+              "description": "Company of the user",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "country": {
+              "type": "string",
+              "description": "Country of the user. Only valid country names are allowed",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "phone": {
+              "type": "string",
+              "description": "Phone of the user. Only digits, space and ()+-. are allowed",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "state": {
+              "type": "string",
+              "description": "State of the user. Only a-z, A-Z, and space is allowed",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "extendedUserAttributes": {
+              "$ref": "#/components/schemas/ExtendedUserAttributes"
+            }
+          }
+        },
+        "PublishedAPIUpdateUsersResponse": {
+          "type": "array",
+          "items": {
+            "allOf": [
+              {
+                "required": [
+                  "code",
+                  "status",
+                  "message"
+                ],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "Status code: ATMOSPHERE-11073: All user details updated successfully, ATMOSPHERE-11074: Failed to update one or more user details."
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "Status of the API invocation. 'success' when the request is successful, 'updating' when the request is being processed and 'error' when request has failed"
+                  },
+                  "message": {
+                    "type": "string",
+                    "description": "status message"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "PublishedAPIInvalidEmailAndErrorMessages": {
+          "required": [
+            "email",
+            "errorMessages"
+          ],
+          "properties": {
+            "email": {
+              "type": "string",
+              "description": "Email Id of the invalid bulk payload entry"
+            },
+            "errorMessages": {
+              "type": "array",
+              "description": "List of error messages describing the validation issues",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "ExtendedUserAttributes": {
+          "properties": {
+            "reportsTo": {
+              "type": "string",
+              "description": "Extended user attribute, to know this user's manager in the organization e.g. 'Jon Smith'. Allowed characters are alphabets, numbers, hyphens, underscores and spaces",
+              "minLength": 0,
+              "maxLength": 255
+            },
+            "department": {
+              "type": "string",
+              "description": "Extended user attribute, to know this user's department in the organization e.g. 'Infrastructure Engineering'. Allowed characters are alphabets, numbers, hyphens, underscores and spaces",
+              "minLength": 0,
+              "maxLength": 100
+            },
+            "jobTitle": {
+              "type": "string",
+              "description": "Extended user attribute, to know the business title of the user e.g. 'Senior Software Developer'. Allowed characters are alphabets, numbers, hyphens, underscores and spaces",
+              "minLength": 0,
+              "maxLength": 100
+            },
+            "description": {
+              "type": "string",
+              "description": "Extended user attribute, extra description about the user. Allowed characters are alphabets, numbers, hyphens, underscores, parenthesis, periods and spaces",
+              "minLength": 0,
+              "maxLength": 400
+            },
+            "communicationEmail": {
+              "type": "string",
+              "description": "Extended user attribute, communication Email of the user",
+              "minLength": 3,
+              "maxLength": 255
+            }
+          }
+        },
+        "PostChildOrganizationRequest": {
+          "required": [
+            "displayName"
+          ],
+          "properties": {
+            "displayName": {
+              "type": "string",
+              "description": "Display name for organization"
+            },
+            "description": {
+              "type": "string",
+              "description": "Description for organization"
+            },
+            "tags": {
+              "type": "array",
+              "description": "List of tags for the account. A valid tag should only contain letters, digits, underscores or dashes and length of a tag should be minimum 2 and maximum 80",
+              "items": {
+                "type": "string"
+              }
+            },
+            "shareWithParent": {
+              "type": "boolean",
+              "default": false,
+              "description": "True if the child org can share assets with its parent org"
+            },
+            "skipInheritPublishedAPIAccess": {
+              "type": "boolean",
+              "description": "Skip inheriting the published API access from parent organization. Default value is false i.e the child organization will have the published API access.",
+              "default": false
+            }
+          }
+        },
+        "PutTagsPayload": {
+          "required": [
+            "tags"
+          ],
+          "properties": {
+            "tags": {
+              "type": "array",
+              "description": "List of tags for the account. A valid tag should only contain letters, digits, underscores or dashes and length of a tag should be minimum 2 and maximum 80",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "PostChildOrganizationResponse": {
+          "required": [
+            "childAccountId"
+          ],
+          "properties": {
+            "childAccountId": {
+              "type": "string",
+              "description": "TSC organization id created for child organization."
+            }
+          }
+        },
+        "Error": {
+          "required": [
+            "errorCode",
+            "errorMsg"
+          ],
+          "properties": {
+            "errorCode": {
+              "type": "string",
+              "description": "Error code"
+            },
+            "errorMsg": {
+              "type": "string",
+              "description": "Error message to be displayed by Web UI"
+            },
+            "errorDetails": {
+              "type": "string",
+              "description": "More details about the error"
+            },
+            "contextAttributes": {
+              "description": "Any relevant context information. Typically, the UTC timestamp with accuracy up to seconds to help with error reporting, is included",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "Success": {
+          "required": [
+            "message"
+          ],
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "Success message"
+            }
+          }
+        },
+        "GetChildAccountsResponse": {
+          "required": [
+            "myAccounts"
+          ],
+          "properties": {
+            "myAccounts": {
+              "type": "array",
+              "description": "List of children organizations",
+              "items": {
+                "$ref": "#/components/schemas/ChildAccountSubscriptionInfo"
+              }
+            },
+            "totalAccounts": {
+              "type": "integer",
+              "description": "total number of organizations"
+            }
+          }
+        },
+        "ChildAccountSubscriptionInfo": {
+          "required": [
+            "accountId",
+            "displayName",
+            "regions"
+          ],
+          "properties": {
+            "displayName": {
+              "type": "string",
+              "description": "TSC Organizations display name"
+            },
+            "accountId": {
+              "type": "string",
+              "description": "TSC Organizations Account ID"
+            },
+            "regions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "list of regions child organization has subscriptions in. If a child organization is associated with more than one region, then that child organization can not be deleted using the DELETE API."
+            },
+            "tags": {
+              "type": "array",
+              "description": "Tags associated with the account",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "GenerateSecretRequest": {
+          "required": [
+            "accessKeyId"
+          ],
+          "properties": {
+            "accessKeyId": {
+              "type": "string",
+              "description": "AccessKey Id"
+            },
+            "tenantId": {
+              "type": "string",
+              "description": "tenantId linked to access key Id. Access key secret generated can be used for this tenant."
+            }
+          }
+        },
+        "GenerateSecretResponse": {
+          "required": [
+            "accessKeySecret"
+          ],
+          "properties": {
+            "accessKeySecret": {
+              "type": "string",
+              "description": "AccessKey Secret"
+            },
+            "connectUrl": {
+              "type": "string",
+              "description": "Connection URL"
+            }
+          }
+        }
+      },
+      "securitySchemes": {
+        "OAuth2Bearer": {
+          "type": "http",
+          "description": "OAuth2 Bearer access token, is required to be set in the http Authorization header for API requests",
+          "scheme": "bearer"
+        }
+      }
+    },
+    "x-original-swagger-version": "2.0"
+  }
